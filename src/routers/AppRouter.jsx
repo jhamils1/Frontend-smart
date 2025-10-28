@@ -10,6 +10,8 @@ import RolesPage from "../pages/roles/rolesPage.jsx";
 import UserPage from "../pages/usuario/userPage.jsx";
 
 import EmpleadoPage from "../pages/empleado/empleadoPage.jsx";
+import CategoriaPage from "../pages/categoria/categoriaPage.jsx";
+import ProductoPage from "../pages/producto/productoPage.jsx";
 
 // Ejemplo de layout, dashboard y otras páginas (puedes agregar más según tu proyecto)
 // import Layout from "../pages/layout";
@@ -35,9 +37,11 @@ const AppRouter = () => {
 				<Route element={<AdminRoutes />}>
 					<Route path="/admin/dashboard" element={<Dashboard />} />
 					<Route path="/clientes" element={<ClientePage />} />
-				<Route path="/administracion/empleado" element={<EmpleadoPage />} />
-				<Route path="/administracion/rol" element={<RolesPage />} />
-				<Route path="/administracion/usuario" element={<UserPage />} />
+					<Route path="/administracion/empleado" element={<EmpleadoPage />} />
+					<Route path="/administracion/rol" element={<RolesPage />} />
+					<Route path="/administracion/usuario" element={<UserPage />} />
+					<Route path="/productos/categoria" element={<CategoriaPage />} />
+					<Route path="/productos/producto" element={<ProductoPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
