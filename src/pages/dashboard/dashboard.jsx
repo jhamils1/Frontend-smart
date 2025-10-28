@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logoSmart from "../../assets/logosmart.png";
+import Sidebar from "../../components/sidebar.jsx";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -29,60 +29,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Barra lateral */}
-      <aside className={`${isSidebarOpen ? "w-64" : "w-20"} bg-gradient-to-b from-gray-800 to-gray-900 text-white transition-all duration-300 flex flex-col`}>
-        {/* Header de la barra lateral */}
-        <div className="p-4 flex flex-col items-center justify-center border-b border-gray-700">
-          <div className="w-full flex items-center justify-between">
-            <div className="flex flex-col items-center justify-center w-full">
-              {isSidebarOpen && (
-                <>
-                  <img src={logoSmart} alt="Logo Smart Sales 365" style={{ width: "120px", marginBottom: "0.5rem" }} />
-                  <p className="text-xs text-gray-400">Sistema de Gestión Comercial</p>
-                </>
-              )}
-            </div>
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-gray-400 hover:text-white ml-2"
-            >
-              ☰
-            </button>
-          </div>
-        </div>
-        {/* Menú de navegación */}
-        <nav className="flex-1 py-4">
-          <MenuItem icon="🏠" label="Dashboard" active={true} isOpen={isSidebarOpen} onClick={() => navigate("/admin/dashboard")} />
-          <MenuItem icon="👥" label="Clientes" isOpen={isSidebarOpen} onClick={() => navigate("/clientes")} />
-          <MenuItem icon="📦" label="Catálogo" isOpen={isSidebarOpen} onClick={() => navigate("/catalogo")} />
-          <MenuItem icon="💸" label="Ventas" isOpen={isSidebarOpen} onClick={() => navigate("/ventas")} />
-          <MenuItem icon="📊" label="Analítica" isOpen={isSidebarOpen} onClick={() => navigate("/analitica")} />
-          <MenuItem icon="⚙️" label="Administración" isOpen={isSidebarOpen} onClick={() => navigate("/administracion")} />
-        </nav>
-        {/* Perfil y Logout */}
-        <div className="border-t border-gray-700 p-4">
-          {isSidebarOpen && (
-            <div className="flex items-center gap-3 mb-3">
-              <img
-                src={`https://ui-avatars.com/api/?name=${username}&background=4F46E5&color=fff&size=40`}
-                alt="avatar"
-                className="rounded-full"
-              />
-              <div className="flex-1">
-                <p className="text-sm font-semibold">{username}</p>
-                <p className="text-xs text-gray-400">{userRole}</p>
-              </div>
-            </div>
-          )}
-          <button
-            onClick={handleLogout}
-            className={`${isSidebarOpen ? "w-full" : "w-full"} bg-red-600 hover:bg-red-700 py-2 px-3 rounded transition flex items-center justify-center gap-2`}
-          >
-            <span>🚪</span>
-            {isSidebarOpen && <span className="text-sm">Cerrar Sesión</span>}
-          </button>
-        </div>
-      </aside>
+      <Sidebar isVisible={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       {/* Contenido principal */}
       <main className="flex-1 overflow-y-auto">
         {/* Header principal sin logo */}
@@ -172,21 +119,6 @@ const Dashboard = () => {
         </div>
       </main>
     </div>
-  );
-};
-
-// Componente para los items del menú
-const MenuItem = ({ icon, label, active = false, isOpen, onClick }) => {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition ${
-        active ? "bg-gray-700 border-l-4 border-blue-500" : ""
-      }`}
-    >
-      <span className="text-xl">{icon}</span>
-      {isOpen && <span className="text-sm font-medium">{label}</span>}
-    </button>
   );
 };
 

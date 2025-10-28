@@ -1,9 +1,8 @@
-import axios from "axios";
+import apiClient from "./axiosConfig";
 
 async function login(username, password) {
 	try {
-		const apiUrl = import.meta.env.VITE_API_URL;
-	const res = await axios.post(`${apiUrl}token/`, {
+		const res = await apiClient.post('/token/', {
 			username,
 			password,
 		});
@@ -13,9 +12,6 @@ async function login(username, password) {
 		// Guardar tokens
 		localStorage.setItem("access", access);
 		localStorage.setItem("refresh", refresh);
-
-		// Configurar axios para futuras peticiones
-		axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
 
 		console.log("Login correcto ✅");
 		return true;

@@ -1,48 +1,57 @@
 import React, { useEffect, useState } from "react";
-import EmpleadoList from "./empleadoList.jsx";
-import EmpleadoForm from "./empeladoForm.jsx";
+import RolesList from "./rolesList.jsx";
+import RolesForm from "./rolesForm.jsx";
 import {
-	getEmpleados,
-	createEmpleado,
-	updateEmpleado,
-	deleteEmpleado,
-} from "../../api/empleadoApi.jsx";
-import { getUsuarios } from "../../api/usersApi.jsx";
+	getRoles,
+	createRole,
+	updateRole,
+	deleteRole,
+} from "../../api/rolesApi.jsx";
 import Sidebar from "../../components/sidebar.jsx";
+import { getPermissions } from "../../api/rolesApi.jsx";
 
-const EmpleadoPage = () => {
-	const [empleados, setEmpleados] = useState([]);
-	const [usuarios, setUsuarios] = useState([]);
+const RolesPage = () => {
+	const [roles, setRoles] = useState([]);
+	const [permisos, setPermisos] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [editing, setEditing] = useState(null);
 	const [showForm, setShowForm] = useState(false);
 
-	async function loadEmpleados() {
+	async function loadRoles() {
 		setLoading(true);
 		try {
-			const data = await getEmpleados();
-			setEmpleados(Array.isArray(data) ? data : []);
+			const data = await getRoles();
+			setRoles(Array.isArray(data) ? data : []);
 		} catch (e) {
-			console.error("Error al cargar empleados:", e);
-			alert("Error al cargar empleados");
+			console.error("Error al cargar roles:", e);
+			if (e.response?.status === 401) {
+				alert("Error al cargar roles: Sesión expirada. Por favor, inicia sesión nuevamente.");
+				// Opcional: redirigir al login
+				// window.location.href = '/login';
+			} else {
+				alert("Error al cargar roles");
+			}
 		} finally {
 			setLoading(false);
 		}
 	}
 
-	async function loadUsuarios() {
+	async function loadPermisos() {
 		try {
-			const data = await getUsuarios();
-			setUsuarios(Array.isArray(data) ? data : []);
+			const data = await getPermissions();
+			setPermisos(Array.isArray(data) ? data : []);
 		} catch (e) {
-			console.error("Error al cargar usuarios:", e);
-			setUsuarios([]);
+			console.error("Error al cargar permisos:", e);
+			if (e.response?.status === 401) {
+				console.warn("No se pueden cargar permisos: sesión no autenticada");
+			}
+			setPermisos([]);
 		}
 	}
 
 	useEffect(() => {
-		loadEmpleados();
-		loadUsuarios();
+		loadRoles();
+		loadPermisos();
 	}, []);
 
 	const handleEdit = (row) => {
@@ -51,29 +60,29 @@ const EmpleadoPage = () => {
 	};
 
 	const handleDelete = async (id) => {
-		if (!window.confirm("¿Seguro que quieres eliminar este empleado?")) return;
+		if (!window.confirm("¿Seguro que quieres eliminar este rol?")) return;
 		try {
-			await deleteEmpleado(id);
-			alert("Empleado eliminado correctamente");
-			loadEmpleados();
+			await deleteRole(id);
+			alert("Rol eliminado correctamente");
+			loadRoles();
 		} catch (e) {
 			console.error("Error al eliminar:", e);
-			alert("Error al eliminar empleado");
+			alert("Error al eliminar rol");
 		}
 	};
 
 	const handleFormSubmit = async (formData) => {
 		try {
 			if (editing) {
-				await updateEmpleado(editing.id, formData);
-				alert("Empleado actualizado correctamente");
+				await updateRole(editing.id, formData);
+				alert("Rol actualizado correctamente");
 			} else {
-				await createEmpleado(formData);
-				alert("Empleado creado correctamente");
+				await createRole(formData);
+				alert("Rol creado correctamente");
 			}
 			setShowForm(false);
 			setEditing(null);
-			loadEmpleados();
+			loadRoles();
 		} catch (e) {
 			console.error("Error:", e);
 			alert("Error: " + e.message);
@@ -85,11 +94,11 @@ const EmpleadoPage = () => {
 			<Sidebar />
 			<main className="flex-1 overflow-y-auto">
 				<header className="bg-white shadow-sm p-6">
-					<h1 className="text-3xl font-bold text-gray-800">Empleados</h1>
+					<h1 className="text-3xl font-bold text-gray-800">Roles</h1>
 				</header>
 				<div className="p-6">
-					<EmpleadoList
-						empleados={empleados}
+					<RolesList
+						roles={roles}
 						onEdit={handleEdit}
 						onDelete={handleDelete}
 						onAddNew={() => {
@@ -101,15 +110,15 @@ const EmpleadoPage = () => {
 					{showForm && (
 						<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 							<div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-								<EmpleadoForm
+								<RolesForm
 									onSubmit={handleFormSubmit}
 									onCancel={() => {
 										setShowForm(false);
 										setEditing(null);
 									}}
 									initialData={editing}
+									permisos={permisos}
 									loading={loading}
-									usuarios={usuarios}
 								/>
 							</div>
 						</div>
@@ -120,4 +129,4 @@ const EmpleadoPage = () => {
 	);
 };
 
-export default EmpleadoPage;
+export default RolesPage;

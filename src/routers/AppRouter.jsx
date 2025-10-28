@@ -4,6 +4,12 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import LoginPage from "../pages/login/loginPage.jsx";
 import RegisterPage from "../pages/register/registerPage.jsx";
 import Dashboard from "../pages/dashboard/dashboard.jsx";
+import ClientePage from "../pages/cliente/clientePage.jsx";
+
+import RolesPage from "../pages/roles/rolesPage.jsx";
+import UserPage from "../pages/usuario/userPage.jsx";
+
+import EmpleadoPage from "../pages/empleado/empleadoPage.jsx";
 
 // Ejemplo de layout, dashboard y otras páginas (puedes agregar más según tu proyecto)
 // import Layout from "../pages/layout";
@@ -28,6 +34,10 @@ const AppRouter = () => {
 				{/* Ruta protegida para el dashboard */}
 				<Route element={<AdminRoutes />}>
 					<Route path="/admin/dashboard" element={<Dashboard />} />
+					<Route path="/clientes" element={<ClientePage />} />
+				<Route path="/administracion/empleado" element={<EmpleadoPage />} />
+				<Route path="/administracion/rol" element={<RolesPage />} />
+				<Route path="/administracion/usuario" element={<UserPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
