@@ -8,6 +8,7 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openCatalogo, setOpenCatalogo] = useState(false);
   const [openVentas, setOpenVentas] = useState(false);
+  const [openAnalitica, setOpenAnalitica] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState(localStorage.getItem("username") || "Usuario");
@@ -23,20 +24,23 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
     navigate("/login");
   };
 
-  // Menús en el orden solicitado
+  // Menú y submenús (referencia interna; el render está ordenado manualmente debajo)
+  // Orden solicitado: Dashboard, Productos (Catálogo, Categoría), Clientes, Carrito de Compra,
+  // Ventas (Visualizar Comprobantes, Listado Histórico), Analítica, Administración
   const menuItems = [
     { icon: "🏠", label: "Dashboard", path: "/admin/dashboard" },
-    // Ventas con submenú
+    { icon: "📦", label: "Productos", path: "/productos" },
     { icon: "👥", label: "Clientes", path: "/clientes" },
-    // Productos (Catálogo) con submenú
-    { icon: "💰", label: "Finanzas", path: "/finanzas" },
-    // Analítica
+    { icon: "🛒", label: "Carrito de Compra", path: "/carrito" },
+    { icon: "💸", label: "Ventas", path: "/ventas" },
     { icon: "📊", label: "Analítica", path: "/analitica" },
+    { icon: "⚙️", label: "Administración", path: "/administracion" },
   ];
 
   const ventasSubmenu = [
-    { label: "Pedidos", path: "/ventas/pedidos" },
-    { label: "Nuevo Pedido", path: "/ventas/nuevo" },
+    { label: "Carrito de Compra", path: "/carrito" },
+    { label: "Visualizar Comprobantes", path: "/ventas/comprobantes" },
+    { label: "Listado Histórico", path: "/ventas/historico" },
   ];
 
   const adminSubmenu = [
@@ -48,6 +52,12 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
   const productosSubmenu = [
     { label: "Catalogo", path: "/productos/producto" },
     { label: "Categoria", path: "/productos/categoria" },
+  ];
+
+  const analiticaSubmenu = [
+    { label: "Dashboard Predictivo", path: "/analitica/dashboard-predictivo" },
+    { label: "Generación de Reportes Dinámicos", path: "/analitica/reportes" },
+    { label: "Entrenamiento del Modelo IA", path: "/analitica/entrenamiento-ia" },
   ];
 
   return (
@@ -72,7 +82,7 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
           </button>
         </div>
       </div>
-      {/* Menú de navegación */}
+      {/* Menú de navegación (orden según solicitud) */}
       <nav className="flex-1 py-3">
         {/* Dashboard */}
         <button
@@ -81,42 +91,6 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
         >
           <span className="text-xl">🏠</span>
           {isSidebarOpen && <span className="text-sm font-medium">Dashboard</span>}
-        </button>
-        {/* Ventas con submenú */}
-        <div className="relative">
-          <button
-            onClick={() => setOpenVentas(!openVentas)}
-            className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
-          >
-            <span className="text-xl">💸</span>
-            {isSidebarOpen && <span className="text-sm font-medium">Ventas</span>}
-            {isSidebarOpen && (
-              <span className="ml-auto">
-                {openVentas ? <FaChevronDown /> : <FaChevronRight />}
-              </span>
-            )}
-          </button>
-          {isSidebarOpen && openVentas && (
-            <div className="ml-8 mt-1 flex flex-col gap-1">
-              {ventasSubmenu.map((sub, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => navigate(sub.path)}
-                  className="text-left px-2 py-2 hover:bg-gray-700 rounded"
-                >
-                  {sub.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        {/* Clientes */}
-        <button
-          onClick={() => navigate("/clientes")}
-          className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
-        >
-          <span className="text-xl">👥</span>
-          {isSidebarOpen && <span className="text-sm font-medium">Clientes</span>}
         </button>
         {/* Productos con submenú */}
         <div className="relative">
@@ -146,22 +120,71 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
             </div>
           )}
         </div>
-        {/* Finanzas */}
+        {/* Clientes */}
         <button
-          onClick={() => navigate("/finanzas")}
+          onClick={() => navigate("/clientes")}
           className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
         >
-          <span className="text-xl">💰</span>
-          {isSidebarOpen && <span className="text-sm font-medium">Finanzas</span>}
+          <span className="text-xl">👥</span>
+          {isSidebarOpen && <span className="text-sm font-medium">Clientes</span>}
         </button>
-        {/* Analítica */}
-        <button
-          onClick={() => navigate("/analitica")}
-          className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
-        >
-          <span className="text-xl">📊</span>
-          {isSidebarOpen && <span className="text-sm font-medium">Analítica</span>}
-        </button>
+        {/* (Carrito ahora está dentro del submenú de Ventas) */}
+        {/* Ventas con submenú */}
+        <div className="relative">
+          <button
+            onClick={() => setOpenVentas(!openVentas)}
+            className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
+          >
+            <span className="text-xl">💸</span>
+            {isSidebarOpen && <span className="text-sm font-medium">Ventas</span>}
+            {isSidebarOpen && (
+              <span className="ml-auto">
+                {openVentas ? <FaChevronDown /> : <FaChevronRight />}
+              </span>
+            )}
+          </button>
+          {isSidebarOpen && openVentas && (
+            <div className="ml-8 mt-1 flex flex-col gap-1">
+              {ventasSubmenu.map((sub, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => navigate(sub.path)}
+                  className="text-left px-2 py-2 hover:bg-gray-700 rounded"
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Analítica con submenú */}
+        <div className="relative">
+          <button
+            onClick={() => setOpenAnalitica(!openAnalitica)}
+            className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
+          >
+            <span className="text-xl">📊</span>
+            {isSidebarOpen && <span className="text-sm font-medium">Analítica</span>}
+            {isSidebarOpen && (
+              <span className="ml-auto">
+                {openAnalitica ? <FaChevronDown /> : <FaChevronRight />}
+              </span>
+            )}
+          </button>
+          {isSidebarOpen && openAnalitica && (
+            <div className="ml-8 mt-1 flex flex-col gap-1">
+              {analiticaSubmenu.map((sub, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => navigate(sub.path)}
+                  className="text-left px-2 py-2 hover:bg-gray-700 rounded"
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {/* Menú Administración con submenú */}
         <div className="relative">
           <button
@@ -190,6 +213,15 @@ const Sidebar = ({ isVisible = true, onToggle }) => {
             </div>
           )}
         </div>
+
+        {/* Backup (debajo de Administración) */}
+        <button
+          onClick={() => navigate("/backup")}
+          className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition`}
+        >
+          <span className="text-xl">💾</span>
+          {isSidebarOpen && <span className="text-sm font-medium">Backup</span>}
+        </button>
       </nav>
       {/* Perfil y Logout */}
       <div className="border-t border-gray-700 p-4">

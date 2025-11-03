@@ -12,6 +12,7 @@ import UserPage from "../pages/usuario/userPage.jsx";
 import EmpleadoPage from "../pages/empleado/empleadoPage.jsx";
 import CategoriaPage from "../pages/categoria/categoriaPage.jsx";
 import ProductoPage from "../pages/producto/productoPage.jsx";
+import BackupPage from "../pages/backup/backupPage.jsx";
 
 // Ejemplo de layout, dashboard y otras páginas (puedes agregar más según tu proyecto)
 // import Layout from "../pages/layout";
@@ -42,6 +43,7 @@ const AppRouter = () => {
 					<Route path="/administracion/usuario" element={<UserPage />} />
 					<Route path="/productos/categoria" element={<CategoriaPage />} />
 					<Route path="/productos/producto" element={<ProductoPage />} />
+					<Route path="/backup" element={<BackupPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

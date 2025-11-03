@@ -11,6 +11,8 @@ apiClient.interceptors.request.use(
 		const token = localStorage.getItem("access");
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
+		} else {
+			console.warn("No hay token de acceso en localStorage. La petición puede fallar con 401.");
 		}
 		return config;
 	},
@@ -22,13 +24,55 @@ apiClient.interceptors.request.use(
 // Interceptor para manejar errores de autenticación
 apiClient.interceptors.response.use(
 	(response) => response,
-	(error) => {
+	async (error) => {
+		const originalRequest = error.config;
+		
 		if (error.response?.status === 401) {
 			console.error("Error 401: No autenticado o token expirado");
-			// Opcional: limpiar localStorage y redirigir al login
-			// localStorage.removeItem("access");
-			// localStorage.removeItem("refresh");
-			// window.location.href = "/login";
+			
+			// Si no hay token, redirigir al login
+			const token = localStorage.getItem("access");
+			if (!token) {
+				console.error("No hay token disponible. Redirigiendo al login...");
+				localStorage.removeItem("access");
+				localStorage.removeItem("refresh");
+				window.location.href = "/login";
+				return Promise.reject(error);
+			}
+			
+			// Intentar refrescar el token si está expirado
+			const refreshToken = localStorage.getItem("refresh");
+			if (refreshToken && !originalRequest._retry) {
+				originalRequest._retry = true;
+				try {
+					// Crear una instancia temporal de axios sin interceptores para evitar loops infinitos
+					const refreshAxios = axios.create({
+						baseURL: apiClient.defaults.baseURL
+					});
+					
+					const response = await refreshAxios.post('/token/refresh/', {
+						refresh: refreshToken
+					});
+					
+					const { access } = response.data;
+					localStorage.setItem("access", access);
+					
+					// Reintentar la petición original con el nuevo token
+					originalRequest.headers.Authorization = `Bearer ${access}`;
+					return apiClient(originalRequest);
+				} catch (refreshError) {
+					console.error("Error al refrescar token:", refreshError);
+					localStorage.removeItem("access");
+					localStorage.removeItem("refresh");
+					window.location.href = "/login";
+					return Promise.reject(refreshError);
+				}
+			} else {
+				// No hay refresh token o ya se intentó refrescar
+				localStorage.removeItem("access");
+				localStorage.removeItem("refresh");
+				window.location.href = "/login";
+			}
 		}
 		return Promise.reject(error);
 	}
