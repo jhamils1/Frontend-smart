@@ -1,8 +1,10 @@
 import axios from "axios";
 
-// Configurar la URL base
+// Configurar la URL base desde variables de entorno
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
 const apiClient = axios.create({
-	baseURL: "http://localhost:8000",
+	baseURL: API_BASE_URL,
 	withCredentials: true, // Importante para CORS con credenciales
 	headers: {
 		'Content-Type': 'application/json',
